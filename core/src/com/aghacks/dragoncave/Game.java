@@ -15,7 +15,7 @@ public class Game implements ApplicationListener {
 	public static int V_HEIGHT;
 	public static final int SCALE = 2;
 	
-	public static final float STEP = 1 / 60f;
+	public static float STEP = 1 / 60f;
 	private float accum;
 
 	private SpriteBatch sb;
@@ -40,6 +40,8 @@ public class Game implements ApplicationListener {
 		res.loadTexture("images/stalactite.png", "stalactite");
 		res.loadTexture("images/meteor.png", "meteor");
 		res.loadTexture("images/ground.png", "ground");
+		res.loadTexture("images/slowMotion.png", "slowMotion");
+
 		
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, V_WIDTH, V_HEIGHT);

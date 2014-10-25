@@ -15,4 +15,5 @@ public class B2DVars {
 	public static final int DRAGON = 128;
 	public static final int GROUND = 256;
 	public static final int METEOR = 512;
+	public static final Object STALACTITE = 1024;
 }

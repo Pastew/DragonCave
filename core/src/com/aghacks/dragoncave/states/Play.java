@@ -6,8 +6,12 @@ import java.util.ArrayList;
 
 import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.entities.Dragon;
+import com.aghacks.dragoncave.entities.Entity;
 import com.aghacks.dragoncave.entities.Ground;
 import com.aghacks.dragoncave.entities.Meteor;
+import com.aghacks.dragoncave.entities.Stalactite;
+import com.aghacks.dragoncave.handlers.B2DVars;
+import com.aghacks.dragoncave.handlers.Background;
 import com.aghacks.dragoncave.handlers.GameStateManager;
 import com.aghacks.dragoncave.handlers.MyContactListener;
 import com.aghacks.dragoncave.handlers.Timer;
@@ -32,16 +36,24 @@ public class Play extends GameState{
 	// camera
 	public static Box2DDebugRenderer b2dr;	
 	public static OrthographicCamera b2dCam;
+	private float camXPos;
 	
 	// entities
-	private ArrayList<Meteor> entities = new ArrayList<Meteor>();
+	private ArrayList<Entity> entities = new ArrayList<Entity>();
 	public static Dragon dragon;
 	private Timer meteorTimer;
 	private Timer stalactiteTimer;
 	
+	// bg
+	private Background bg;
+	
 	// respawn
 	private float stalactiteRespawnTime = 1.5f;
 	private float meteorRespawnTime = 1f;
+	
+	// slow motion
+	private static boolean slowMotionOn = false;
+	private Sprite slowMotionSprite;
 	
 	private Array<Body> tmpBodies = new Array<Body>();
 	
@@ -57,7 +69,7 @@ public class Play extends GameState{
 		// box2d cam
 		b2dCam = new OrthographicCamera();
 		b2dCam.setToOrtho(false, Game.V_WIDTH / PPM, Game.V_HEIGHT / PPM);
-		
+				
 		// ========= GAME OBJECTS ========
 		dragon = new Dragon(world);
 		
@@ -70,6 +82,15 @@ public class Play extends GameState{
 		// stalactites
 		stalactiteTimer = new Timer(stalactiteRespawnTime);
 		stalactiteTimer.start();
+		
+		bg = new Background();
+		slowMotionSprite = new Sprite(Game.res.getTexture("slowMotion"));	
+		slowMotionSprite.setSize(Game.V_WIDTH/10, Game.V_WIDTH/10);
+		slowMotionSprite.setPosition(Game.V_WIDTH - slowMotionSprite.getWidth(),0);
+		
+		// camera pos X
+		camXPos = dragon.getPosition().x * PPM + Game.V_WIDTH / 4;
+
 	}
 
 	@Override
@@ -91,9 +112,9 @@ public class Play extends GameState{
 			
 			Vector2 newMeteorPos = 
 					new Vector2(
-							dragon.getWorldX()+ Game.V_WIDTH/10 / PPM, 
+							dragon.getWorldX()+ Game.V_WIDTH/2 / PPM, 
 							Game.V_HEIGHT / PPM);
-			entities.add(new Meteor(world, newMeteorPos));
+			new Meteor(world, newMeteorPos);
 		}
 	}
 	
@@ -103,11 +124,18 @@ public class Play extends GameState{
 			
 			float newStalactiteX = dragon.getWorldX()+ Game.V_WIDTH/2 / PPM;
 		
-			//entities.add(new Stalactite(world, newStalactiteX));
+			//new Stalactite(world, newStalactiteX);
 		}
 	}
-	@Override
+	
+	@Override	
 	public void update(float dt) {
+		float dt2 = dt;
+		if(slowMotionOn)
+			dt2 = 1/200f;
+		
+		camXPos += B2DVars.X_SPEED;
+		
 		dragon.fly();
 		produceMeteors();
 		produceStalactites();
@@ -115,7 +143,7 @@ public class Play extends GameState{
 		dragon.update(dt);
 		
 		handleInput();
-		world.step(dt, 6, 2);		
+		world.step(dt2, 6, 2);		
 	}
 
 	@Override
@@ -123,10 +151,15 @@ public class Play extends GameState{
 		// clear screen
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		//cam.position.set(dragon.getPosition().x * PPM + Game.V_WIDTH / 4,
-		//			Game.V_HEIGHT/2, 0
-		//		);
-		//cam.update();
+		sb.setProjectionMatrix(hudCam.combined); // ??
+
+		bg.draw(sb);
+
+		//cam.position.set(dragon.getPosition().x * PPM + Game.V_WIDTH / 4, 
+		cam.position.set(camXPos, 
+				Game.V_HEIGHT/2, 
+				0);
+		cam.update();
 		
 		// draw box2d world
 		b2dr.render(world, b2dCam.combined);
@@ -136,19 +169,8 @@ public class Play extends GameState{
 		dragon.render(sb);	
 		
 		sb.setProjectionMatrix(cam.combined);
-		// draw objects
 		
-		/*
-		sb.begin();
-		for(Meteor en : entities){
-			Sprite sprite = (Sprite) en.body.getUserData();
-			sprite.setPosition(en.body.getPosition().x - sprite.getWidth()/2,
-					en.body.getPosition().y - sprite.getHeight()/2);
-			sprite.setRotation(en.body.getAngle() * MathUtils.radiansToDegrees );
-			sprite.draw(sb);
-		}
-		sb.end();
-		*/
+		// draw objects
 		sb.begin();
 		world.getBodies(tmpBodies);
 		for(Body body : tmpBodies)
@@ -156,11 +178,11 @@ public class Play extends GameState{
 				Sprite sprite = (Sprite) body.getUserData();
 				sprite.setPosition(body.getPosition().x*PPM - sprite.getWidth()/2,
 						body.getPosition().y*PPM - sprite.getHeight()/2);
-				System.out.println("body " + body.getPosition().x + " , " + body.getPosition().y);
-				System.out.println("sprite " +sprite.getX() + " , " + sprite.getY());
 				sprite.setRotation((body.getAngle() * MathUtils.radiansToDegrees));
 				sprite.draw(sb);
 			}
+		sb.setProjectionMatrix(hudCam.combined); // ??
+		slowMotionSprite.draw(sb);
 		sb.end();
 	}
 
@@ -170,7 +192,32 @@ public class Play extends GameState{
 		
 	}
 	
+	public static void slowMotionStart(){
+		//if(!slowMotionOn)
+		//	Game.STEP = 1/15f;
+		slowMotionOn = true;
+
+	}
 	
+	public static void slowMotionStop(){
+		//if(slowMotionOn)
+		//	Game.STEP = 1/60f;
+		slowMotionOn = false;
+	}
 	
+	public static void swipe(Vector2 v1, Vector2 v2){
+		System.out.println("swipe!");
+		
+		Vector2 impulse = new Vector2(v2.sub(v1));
+		impulse.x /= PPM;
+		impulse.y /= -PPM;	// - bo os Y jest w druga strone
+		System.out.println("przed " + impulse);
+		float limit = 5f;
+		impulse.x = impulse.x % limit;
+		impulse.y = impulse.y % limit;
+		dragon.swipe(impulse);
+		System.out.println("po " + impulse);
+
+	}
 	
 }

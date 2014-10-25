@@ -6,7 +6,9 @@ import com.aghacks.dragoncave.Game;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Game(), config);
+		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+		cfg.height = 720;
+		cfg.width = 1280;
+		new LwjglApplication(new Game(), cfg);
 	}
 }

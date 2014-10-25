@@ -2,6 +2,7 @@ package com.aghacks.dragoncave.handlers;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -39,13 +40,13 @@ public class B2DSprite {
 			animation.getFrame(),
 			body.getPosition().x * B2DVars.PPM - bodyWidth / 2,
 			body.getPosition().y * B2DVars.PPM - bodyHeight / 2,
-			0,
-			0,
+			bodyWidth/2,
+			bodyHeight/2,
 			bodyWidth,
 			bodyHeight,
 			1,
 			1,
-			(float)(body.getAngle() * (180/Math.PI))
+			(float)(body.getAngle() * MathUtils.radiansToDegrees)
 		);
 		sb.end();
 	}

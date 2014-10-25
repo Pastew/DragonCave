@@ -6,6 +6,7 @@ import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
 import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.handlers.B2DSprite;
 import com.aghacks.dragoncave.handlers.B2DVars;
+import com.aghacks.dragoncave.handlers.Timer;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -19,13 +20,17 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Dragon extends B2DSprite{
 	
 	private boolean alive = true;
-	
-	private float desiredHeight = V_HEIGHT / 2 / PPM;
+
+	private Timer swipeTimer;
+	private Vector2 goBackImpulse;
+	private boolean shouldGoBack = true;
+	private float desiredHeight = V_HEIGHT /3 / PPM;
 	
 	private final static float bodyWidth = V_HEIGHT/16 / PPM;
 	private final static float bodyHeight = V_HEIGHT/16 / PPM;
 	
 	private boolean canJump = true;
+
 	
 	public Dragon(World world){
 		super(createBody(world));
@@ -34,8 +39,7 @@ public class Dragon extends B2DSprite{
 		TextureRegion[] sprites = TextureRegion.split(tex, 322, 290)[0];
 		setAnimation(sprites, 1/12f, bodyWidth*PPM*2, bodyHeight*PPM*2);		
 		
-		//fdef.filter.categoryBits = B2DVars.BIT_DRAGON;
-		//fdef.filter.maskBits = B2DVars.BIT_GROUND | B2DVars.BIT_OBJECT;		
+		swipeTimer = new Timer(1f);
 	}
 	
 	private static Body createBody(World world){
@@ -62,21 +66,22 @@ public class Dragon extends B2DSprite{
 		if(!alive)
 			return;
 		if(body.getPosition().y < desiredHeight && canJump){
-			//body.setLinearVelocity(B2DVars.X_SPEED, 3);
-			body.applyLinearImpulse(new Vector2(0, 1), 
-					body.getWorldCenter(), true);
+			body.setLinearVelocity(B2DVars.X_SPEED, 3);
+			//body.applyLinearImpulse(new Vector2(0, 2), 
+			//		body.getWorldCenter(), true);
 			
 			canJump = false;
-			//if(body.getLinearVelocity().x > B2DVars.X_SPEED*1.5f)
-			//	body.applyLinearImpulse( new Vector2(-B2DVars.X_SPEED/2, 0), 
-			//			body.getWorldCenter(), true);
-			
 		}
-		//System.out.println(body.getPosition().y + " , " + V_HEIGHT / 2 / PPM); 
-		//System.out.println();
 		
 		if(body.getLinearVelocity().y < 0)
 			canJump = true;
+		
+		if(shouldGoBack && swipeTimer.isDone()){
+			goBackImpulse.x *= -1;
+			goBackImpulse.y *= -1;
+			body.applyLinearImpulse(goBackImpulse, body.getWorldCenter(), true);
+			shouldGoBack = false;
+		}
 	}
 
 	public float getWorldX() {
@@ -90,4 +95,16 @@ public class Dragon extends B2DSprite{
 	public void die() {
 		alive = false;		
 	}
+
+	public void swipe(Vector2 impulse) {
+		body.applyLinearImpulse(impulse, body.getWorldCenter(),  true);
+		swipeTimer.start();
+		goBack(impulse);
+	}
+
+	private void goBack(Vector2 impulse) {
+		goBackImpulse = impulse;
+		shouldGoBack = true;		
+	}
+	
 }

@@ -7,6 +7,7 @@ import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.handlers.B2DSprite;
 import com.aghacks.dragoncave.handlers.B2DVars;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,22 +16,14 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class Stalactite extends B2DSprite{
+public class Stalactite{
 		
 	private static float bodyHeight = V_HEIGHT/10 / PPM;
 	private static float bodyWidth = bodyHeight/4;
 	
-	public Stalactite (World world, float posX){
-		super(createBody(world, posX));
+	public Stalactite (World world, float posX){		
+		//super("images/stalactite.png", V_HEIGHT/10 / PPM, V_HEIGHT/10 / 4 / PPM);
 		
-		Texture tex = Game.res.getTexture("stalactite");
-		TextureRegion[] sprites = TextureRegion.split(tex, 50, 100)[0];
-		setAnimation(sprites, 1/12f, bodyWidth*PPM*2, bodyHeight*PPM*2);	
-		//Vector2 vel = new Vector2(-B2DVars.X_SPEED, -5f);
-		//body.setLinearVelocity(vel);
-	}
-	
-	private static Body createBody(World world, float posX){
 		BodyDef bdef = new BodyDef();
 		float posY = (Game.V_HEIGHT - bodyHeight/2) / PPM;
 		bdef.position.set(posX, posY);
@@ -46,8 +39,15 @@ public class Stalactite extends B2DSprite{
 		fdef.restitution = 0.2f;
 		fdef.friction = 0.1f;
 		
-		body.createFixture(fdef).setUserData(B2DVars.METEOR);
+		body.createFixture(fdef).setUserData(B2DVars.STALACTITE);
 		
-		return body;
+		Sprite boxSprite = new Sprite(new Texture("images/stalactite.png"));
+		boxSprite.setSize(bodyWidth*2 * PPM, bodyHeight*2 * PPM);
+		
+		boxSprite.setOrigin((boxSprite.getWidth()/2) , 
+							(boxSprite.getHeight()/2) );
+
+		body.setUserData(boxSprite);
+		
 	}
 }
