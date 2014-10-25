@@ -18,8 +18,9 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Stalactite{
 		
-	private static float bodyHeight = V_HEIGHT/10 / PPM;
+	private static float bodyHeight = V_HEIGHT/15 / PPM;
 	private static float bodyWidth = bodyHeight/4;
+	Body body;
 	
 	public Stalactite (World world, float posX){		
 		//super("images/stalactite.png", V_HEIGHT/10 / PPM, V_HEIGHT/10 / 4 / PPM);
@@ -28,10 +29,10 @@ public class Stalactite{
 		float posY = (Game.V_HEIGHT - bodyHeight/2) / PPM;
 		bdef.position.set(posX, posY);
 		bdef.type = BodyType.DynamicBody;
-		Body body = world.createBody(bdef);
+		body = world.createBody(bdef);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(bodyHeight, bodyWidth);
+		shape.setAsBox(bodyWidth, bodyHeight);
 		
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
@@ -48,6 +49,9 @@ public class Stalactite{
 							(boxSprite.getHeight()/2) );
 
 		body.setUserData(boxSprite);
-		
+	}
+	
+	public void destroy(World world){
+		world.destroyBody(body);
 	}
 }

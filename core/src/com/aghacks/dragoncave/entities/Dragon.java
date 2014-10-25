@@ -65,10 +65,10 @@ public class Dragon extends B2DSprite{
 	public void fly(){
 		if(!alive)
 			return;
-		if(body.getPosition().y < desiredHeight && canJump){
-			body.setLinearVelocity(B2DVars.X_SPEED, 3);
-			//body.applyLinearImpulse(new Vector2(0, 2), 
-			//		body.getWorldCenter(), true);
+		if(body.getPosition().y < desiredHeight && canJump && !swipeTimer.isDone()){
+			//body.setLinearVelocity(B2DVars.X_SPEED, 3);
+			body.applyLinearImpulse(new Vector2(0, 2), 
+					body.getWorldCenter(), true);
 			
 			canJump = false;
 		}
@@ -104,7 +104,11 @@ public class Dragon extends B2DSprite{
 
 	private void goBack(Vector2 impulse) {
 		goBackImpulse = impulse;
-		shouldGoBack = true;		
+		//shouldGoBack = true;		
+	}
+	
+	public Body getBody(){
+		return this.body;
 	}
 	
 }

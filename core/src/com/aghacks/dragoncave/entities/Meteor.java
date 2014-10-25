@@ -15,15 +15,16 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Meteor{
+	Body body; 
 	
 	private static float bodyWidth = V_HEIGHT/22 / PPM;
-	
+	Sprite boxSprite;
 	public Meteor(World world, Vector2 pos){
 		//super("images/meteor.png", V_HEIGHT / 22 / PPM, V_HEIGHT / 22 / PPM);
 		BodyDef bdef = new BodyDef();
 		bdef.position.set(pos);
 		bdef.type = BodyType.DynamicBody;
-		Body body = world.createBody(bdef);
+		body = world.createBody(bdef);
 		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(bodyWidth);
@@ -40,15 +41,17 @@ public class Meteor{
 		body.setLinearVelocity(vel);	
 		
 		
-		Sprite boxSprite = new Sprite(new Texture("images/meteor.png"));
+		boxSprite = new Sprite(new Texture("images/meteor.png"));
 		boxSprite.setSize(bodyWidth*2 * PPM, bodyWidth*2 * PPM);
 		
 		boxSprite.setOrigin((boxSprite.getWidth()/2) , 
 							(boxSprite.getHeight()/2) );
 
-		body.setUserData(boxSprite);
-		
+		body.setUserData(boxSprite);		
 	}	
+	public void destroy(World world){
+		world.destroyBody(body);
+	}
 }
 
 

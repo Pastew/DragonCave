@@ -16,6 +16,7 @@ import com.aghacks.dragoncave.handlers.GameStateManager;
 import com.aghacks.dragoncave.handlers.MyContactListener;
 import com.aghacks.dragoncave.handlers.Timer;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -39,23 +40,29 @@ public class Play extends GameState{
 	private float camXPos;
 	
 	// entities
-	private ArrayList<Entity> entities = new ArrayList<Entity>();
 	public static Dragon dragon;
 	private Timer meteorTimer;
 	private Timer stalactiteTimer;
 	
+	private Array<Meteor> meteors = new Array<Meteor>();
+	private Array<Stalactite> stalactites = new Array<Stalactite>();
+	
 	// bg
-	private Background bg;
+	private static Background bg;
 	
 	// respawn
 	private float stalactiteRespawnTime = 1.5f;
-	private float meteorRespawnTime = 1f;
+	private float meteorRespawnTime = 0.5f;
 	
 	// slow motion
 	private static boolean slowMotionOn = false;
 	private Sprite slowMotionSprite;
+	private static float camShift = B2DVars.X_SPEED;
 	
 	private Array<Body> tmpBodies = new Array<Body>();
+	
+	// sounds
+	Music music;
 	
 	public Play(GameStateManager gsm) {
 		super(gsm);
@@ -90,7 +97,9 @@ public class Play extends GameState{
 		
 		// camera pos X
 		camXPos = dragon.getPosition().x * PPM + Game.V_WIDTH / 4;
-
+		
+		music = Gdx.audio.newMusic(Gdx.files.internal("music/20141025-hackaton01.mp3"));
+		music.play();
 	}
 
 	@Override
@@ -114,7 +123,11 @@ public class Play extends GameState{
 					new Vector2(
 							dragon.getWorldX()+ Game.V_WIDTH/2 / PPM, 
 							Game.V_HEIGHT / PPM);
-			new Meteor(world, newMeteorPos);
+			meteors.add(new Meteor(world, newMeteorPos));
+			if(meteors.size > 5){
+				meteors.get(0).destroy(world);
+				meteors.removeIndex(0);
+			}
 		}
 	}
 	
@@ -124,7 +137,10 @@ public class Play extends GameState{
 			
 			float newStalactiteX = dragon.getWorldX()+ Game.V_WIDTH/2 / PPM;
 		
-			//new Stalactite(world, newStalactiteX);
+			stalactites.add(new Stalactite(world, newStalactiteX));
+			if(stalactites.size > 5)
+				stalactites.get(0).destroy(world);
+				stalactites.removeIndex(0);
 		}
 	}
 	
@@ -132,9 +148,9 @@ public class Play extends GameState{
 	public void update(float dt) {
 		float dt2 = dt;
 		if(slowMotionOn)
-			dt2 = 1/200f;
+			dt2 = 1/150f;
 		
-		camXPos += B2DVars.X_SPEED;
+		camXPos += camShift;
 		
 		dragon.fly();
 		produceMeteors();
@@ -161,8 +177,13 @@ public class Play extends GameState{
 				0);
 		cam.update();
 		
+		/*
+		if(Math.abs(dragon.getPosition().x * PPM + Game.V_WIDTH / 4 - camXPos) > Game.V_WIDTH/3)
+			shiftCamera();
+			*/
+		
 		// draw box2d world
-		b2dr.render(world, b2dCam.combined);
+		//b2dr.render(world, b2dCam.combined);
 		
 		// draw dragon
 		sb.setProjectionMatrix(cam.combined);
@@ -185,6 +206,15 @@ public class Play extends GameState{
 		slowMotionSprite.draw(sb);
 		sb.end();
 	}
+	void shiftCamera(){
+		float shift =5f;
+		int left;
+		if(dragon.getPosition().x * PPM + Game.V_WIDTH / 4 - camXPos > 0)
+			left = 1;
+		else left = -1;			
+		cam.position.set(cam.position.x + shift * left, Game.V_HEIGHT/2, 0);
+		cam.update();
+	}
 
 	@Override
 	public void dispose() {
@@ -196,17 +226,26 @@ public class Play extends GameState{
 		//if(!slowMotionOn)
 		//	Game.STEP = 1/15f;
 		slowMotionOn = true;
+		bg.slowMotionOn();
+		camShift /= 2;
+		dragon.getBody().setLinearVelocity(dragon.getBody().getLinearVelocity().x*2,
+				dragon.getBody().getLinearVelocity().y);
 
 	}
 	
 	public static void slowMotionStop(){
 		//if(slowMotionOn)
 		//	Game.STEP = 1/60f;
+		if(slowMotionOn==true){
+			bg.slowMotionOff();
+			camShift *= 2;
+		}
 		slowMotionOn = false;
+
 	}
 	
 	public static void swipe(Vector2 v1, Vector2 v2){
-		System.out.println("swipe!");
+		//System.out.println("swipe!");
 		
 		Vector2 impulse = new Vector2(v2.sub(v1));
 		impulse.x /= PPM;

@@ -11,6 +11,8 @@ public class Background {
 	private float bgOffset = 0;
 	private float posX;
 	
+	private float shift = B2DVars.X_SPEED/2;
+	
 	public Background(){
 		bg1 = new Sprite(new Texture("images/bg.png"));
 		//bg2 = new Sprite(new Texture("images/bg.png"));
@@ -19,7 +21,7 @@ public class Background {
 	
 	public void draw(SpriteBatch sb){
 		sb.begin();
-		posX-=B2DVars.X_SPEED/2;
+		posX -= shift;
 		bg1.setPosition(posX, 0);
 		bg1.draw(sb);
 		
@@ -29,5 +31,12 @@ public class Background {
 		if(posX < -Gdx.graphics.getWidth())
 			posX = 0;
 		sb.end();
+	}
+
+	public void slowMotionOn() {
+		shift /= 2;
+	}
+	public void slowMotionOff() {
+		shift *=2;
 	}
 }
