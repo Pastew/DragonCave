@@ -18,7 +18,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -54,7 +53,7 @@ public class Play extends GameState{
 	
 	// slow motion
 	private static boolean slowMotionOn = false;
-	private Sprite slowMotionSprite;
+
 	private static float camShift = B2DVars.X_SPEED;
 	
 	private Array<Body> tmpBodies = new Array<Body>();
@@ -94,16 +93,13 @@ public class Play extends GameState{
 		stalactiteTimer.start();
 		
 		bg = new Background();
-		slowMotionSprite = new Sprite(Game.res.getTexture("slowMotion"));	
-		slowMotionSprite.setSize(Game.V_WIDTH/10, Game.V_WIDTH/10);
-		slowMotionSprite.setPosition(Game.V_WIDTH - slowMotionSprite.getWidth(),0);
-		
+			
 		// camera pos X
 		camXPos = dragon.getPosition().x * PPM + Game.V_WIDTH / 4;
 		
-		intro = Gdx.audio.newMusic(Gdx.files.internal("music/intro.mp3"));
-		loop = Gdx.audio.newMusic(Gdx.files.internal("music/loop.mp3"));
-		slowMotionSound = Gdx.audio.newMusic(Gdx.files.internal("music/slowMotion.mp3"));
+		intro = Game.res.getMusic("intro");
+		loop = Game.res.getMusic("loop");
+		slowMotionSound = Game.res.getMusic("slowMotion");
 		intro.play();
 		
 		// Slow Motion Bar
@@ -112,15 +108,6 @@ public class Play extends GameState{
 
 	@Override
 	public void handleInput() {	
-		/*
-		if(MyInput.isPressed(MyInput.BUTTON1 )){
-			
-		}
-			
-		if(MyInput.isDown(MyInput.BUTTON2 )){
-			
-		}
-		*/
 	}
 
 	private void produceMeteors() {
@@ -173,16 +160,15 @@ public class Play extends GameState{
 		if(!intro.isPlaying()){
 			loop.setLooping(true);
 			loop.play();
-		}
-		
+		}		
 	}
 
 	@Override
 	public void render() {
-		// clear screen
+
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		sb.setProjectionMatrix(hudCam.combined); // ??		
+		sb.setProjectionMatrix(hudCam.combined);	
 		
 		bg.draw(sb);		
 		cam.position.set(camXPos, 
@@ -201,19 +187,19 @@ public class Play extends GameState{
 		
 		// draw objects
 		sb.begin();
-		world.getBodies(tmpBodies);
-		for(Body body : tmpBodies)
-			if(body.getUserData() != null && body.getUserData() instanceof Sprite){
-				Sprite sprite = (Sprite) body.getUserData();
-				sprite.setPosition(body.getPosition().x*PPM - sprite.getWidth()/2,
-						body.getPosition().y*PPM - sprite.getHeight()/2);
-				sprite.setRotation((body.getAngle() * MathUtils.radiansToDegrees));
-				sprite.draw(sb);
-			}
-		sb.setProjectionMatrix(hudCam.combined); // ??
-		slowMotionSprite.draw(sb);
-		sb.end();
-		smBar.render();
+		
+			world.getBodies(tmpBodies);
+			for(Body body : tmpBodies)
+				if(body.getUserData() != null && body.getUserData() instanceof Sprite){
+					Sprite sprite = (Sprite) body.getUserData();
+					sprite.setPosition(body.getPosition().x*PPM - sprite.getWidth()/2,
+							body.getPosition().y*PPM - sprite.getHeight()/2);
+					sprite.setRotation((body.getAngle() * MathUtils.radiansToDegrees));
+					sprite.draw(sb);
+				}
+			sb.setProjectionMatrix(hudCam.combined); // ??				
+		sb.end();	
+		smBar.render(sb);
 	}
 	
 	void shiftCamera(){
@@ -228,7 +214,6 @@ public class Play extends GameState{
 
 	@Override
 	public void dispose() {
-		
 		
 	}
 	
@@ -285,28 +270,14 @@ public class Play extends GameState{
 	}
 
 	public static void swipe(Vector2 v1, Vector2 v2){
-		//System.out.println("swipe!");
 		if(v1==null || v2==null)
 			return;
 		Vector2 impulse = new Vector2(v2.sub(v1));
 		impulse.x /= PPM;
 		impulse.y /= -PPM;	// - bo os Y jest w druga strone
-		//System.out.println("przed " + impulse);
-		//float limit = 5f;
-		//impulse.x = impulse.x % limit;
-		//impulse.y = impulse.y % limit;
-		//System.out.println(impulse.x);
-		//float power = 10;
-		/*
-		if(impulse.x < -1 ) 
-			impulse.x = -power;
-		else 
-			impulse.x = power;
-			*/
+
 		impulse.y = 0;
 		dragon.swipe(impulse);
-		//System.out.println("po " + impulse);
-
 	}
 	
 }

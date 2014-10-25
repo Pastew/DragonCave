@@ -3,6 +3,7 @@ package com.aghacks.dragoncave.entities;
 import static com.aghacks.dragoncave.Game.V_HEIGHT;
 import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
 
+import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.handlers.B2DVars;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -20,7 +21,6 @@ public class Meteor{
 	private static float bodyWidth = V_HEIGHT/22 / PPM;
 	Sprite boxSprite;
 	public Meteor(World world, Vector2 pos){
-		//super("images/meteor.png", V_HEIGHT / 22 / PPM, V_HEIGHT / 22 / PPM);
 		BodyDef bdef = new BodyDef();
 		bdef.position.set(pos);
 		bdef.type = BodyType.DynamicBody;
@@ -41,7 +41,7 @@ public class Meteor{
 		body.setLinearVelocity(vel);	
 		
 		
-		boxSprite = new Sprite(new Texture("images/meteor.png"));
+		boxSprite = new Sprite(Game.res.getTexture("rock2"));
 		boxSprite.setSize(bodyWidth*2 * PPM, bodyWidth*2 * PPM);
 		
 		boxSprite.setOrigin((boxSprite.getWidth()/2) , 

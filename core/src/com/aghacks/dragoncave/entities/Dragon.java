@@ -111,6 +111,8 @@ public class Dragon extends B2DSprite{
 	}
 
 	public void swipe(Vector2 impulse) {
+		if(!alive)
+			return;
 		float swipePower = 10f;
 		
 		if(impulse.x < -0.5f){

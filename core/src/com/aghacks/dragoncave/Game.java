@@ -36,11 +36,31 @@ public class Game implements ApplicationListener {
 		sb = new SpriteBatch();
 		
 		res = new Content();
+		res.loadTexture("images/bg.png", "bg");
 		res.loadTexture("images/dragon.png", "dragon");
-		res.loadTexture("images/stalactite.png", "stalactite");
-		res.loadTexture("images/meteor.png", "meteor");
-		res.loadTexture("images/ground.png", "ground");
-		res.loadTexture("images/slowMotion.png", "slowMotion");
+		res.loadTexture("images/slowmo.png", "slowMotion");
+		
+		res.loadTexture("images/bluebullet.png", "bluebullet");
+		res.loadTexture("images/greenbullet.png", "greenbullet");
+		res.loadTexture("images/redbullet.png", "redbullet");
+		res.loadTexture("images/whitebullet.png", "whitebullet");
+		
+		res.loadTexture("images/rock1.png", "rock1");
+		res.loadTexture("images/rock2.png", "rock2");
+		res.loadTexture("images/rock3.png", "rock3");
+		res.loadTexture("images/rock4.png", "rock4");
+		
+		res.loadTexture("images/fire.png", "fire");
+		
+		res.loadMusic("music/intro.mp3");
+		res.loadMusic("music/loop.mp3");
+		res.loadMusic("music/slowMotion.mp3");
+		
+		res.loadSound("sounds/fall.wav");
+		res.loadSound("sounds/fireball.wav");
+		res.loadSound("sounds/floor.wav");
+		res.loadSound("sounds/menu.wav");
+		res.loadSound("sounds/collision.wav");
 
 		
 		cam = new OrthographicCamera();
@@ -82,8 +102,7 @@ public class Game implements ApplicationListener {
 
 	@Override
 	public void dispose() {
-		res.disposeTexture("dragon");
-		
+		res.removeAll();		
 	}
 	
 	public SpriteBatch getSpriteBatch(){ return sb; };

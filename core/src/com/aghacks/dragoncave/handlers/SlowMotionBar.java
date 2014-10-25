@@ -2,6 +2,8 @@ package com.aghacks.dragoncave.handlers;
 
 import com.aghacks.dragoncave.Game;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
@@ -13,36 +15,46 @@ public class SlowMotionBar {
 	private ShapeRenderer sr;
 	long lastUpdateTime;
 	
+	private Sprite sprite;
+	
 	private long lastClick;
 	private State state;
-	private boolean colorSilver;
 	private Color color;
 	
 	public SlowMotionBar(){
 		this.state = State.NOT_RUNNING;
 		this.amount = amountMax;
 		sr = new ShapeRenderer();
+		
+		sprite = new Sprite(Game.res.getTexture("slowMotion"));	
+		sprite.setSize(Game.V_WIDTH / 17, Game.V_HEIGHT);
+		sprite.setPosition(Game.V_WIDTH - sprite.getWidth(),0);
 	}
 	
-	public void render(){
+	public void render(SpriteBatch sb){
 		// ramka
 		sr.begin(ShapeType.Line);
 			sr.setColor(color);
-			sr.rect(Game.V_WIDTH-Game.V_WIDTH/30-10, 
+			sr.rect(Game.V_WIDTH - Game.V_WIDTH/16, 
 					0, 
 					
-					Game.V_WIDTH/20, 
+					Game.V_WIDTH/16, 
 					Game.V_HEIGHT);		
 		sr.end();	
 		
 		// srodek
 		sr.begin(ShapeType.Filled);
-		sr.rect(Game.V_WIDTH-Game.V_WIDTH/30-9, 
+		sr.rect(Game.V_WIDTH-Game.V_WIDTH/16, 
 				1, 
 				
-				Game.V_WIDTH/20-1, 
+				Game.V_WIDTH/16-1, 
 				(Game.V_HEIGHT-1) * ((float)amount/amountMax));	
 		sr.end();
+		
+		// napis
+		sb.begin();
+		sprite.draw(sb);
+		sb.end();
 	}
 	
 	public void update(){
@@ -59,7 +71,6 @@ public class SlowMotionBar {
 		lastUpdateTime = System.currentTimeMillis();
 		if(lastUpdateTime - lastClick >= SlowMotionBar.FROZEN_TIME) {
 			color = new Color(0.2f, 0.2f, 0.2f, 0.4f);
-			colorSilver = true;
 		}
 	}
 	
@@ -74,8 +85,7 @@ public class SlowMotionBar {
 	}
 	
 	public void froze() {
-		color = new Color(0.4f, 0.4f, 0.4f, 0.6f);
-		colorSilver = false;
+		color = new Color(0.4f, 0.4f, 0.4f, 0.8f);
 	}
 	
 	public long getLastClick() { return lastClick; }

@@ -4,18 +4,15 @@ import static com.aghacks.dragoncave.Game.V_HEIGHT;
 import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
 
 import com.aghacks.dragoncave.Game;
-import com.aghacks.dragoncave.handlers.B2DSprite;
 import com.aghacks.dragoncave.handlers.B2DVars;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-
+import com.aghacks.dragoncave.Game;
 public class Stalactite{
 		
 	private static float bodyHeight = V_HEIGHT/15 / PPM;
@@ -41,8 +38,7 @@ public class Stalactite{
 		fdef.friction = 0.1f;
 		
 		body.createFixture(fdef).setUserData(B2DVars.ENEMY);
-		
-		Sprite boxSprite = new Sprite(new Texture("images/stalactite.png"));
+		Sprite boxSprite = new Sprite(Game.res.getTexture("rock1"));
 		boxSprite.setSize(bodyWidth*2 * PPM, bodyHeight*2 * PPM);
 		
 		boxSprite.setOrigin((boxSprite.getWidth()/2) , 
