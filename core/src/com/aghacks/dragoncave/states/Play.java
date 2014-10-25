@@ -6,19 +6,21 @@ import java.util.ArrayList;
 
 import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.entities.Dragon;
-import com.aghacks.dragoncave.entities.Entity;
 import com.aghacks.dragoncave.entities.Ground;
 import com.aghacks.dragoncave.entities.Meteor;
-import com.aghacks.dragoncave.entities.Stalactite;
 import com.aghacks.dragoncave.handlers.GameStateManager;
 import com.aghacks.dragoncave.handlers.MyContactListener;
 import com.aghacks.dragoncave.handlers.Timer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 
 public class Play extends GameState{
@@ -32,14 +34,16 @@ public class Play extends GameState{
 	public static OrthographicCamera b2dCam;
 	
 	// entities
-	private ArrayList<Entity> entities = new ArrayList<Entity>();
-	private Dragon dragon;
+	private ArrayList<Meteor> entities = new ArrayList<Meteor>();
+	public static Dragon dragon;
 	private Timer meteorTimer;
 	private Timer stalactiteTimer;
 	
 	// respawn
 	private float stalactiteRespawnTime = 1.5f;
 	private float meteorRespawnTime = 1f;
+	
+	private Array<Body> tmpBodies = new Array<Body>();
 	
 	public Play(GameStateManager gsm) {
 		super(gsm);
@@ -56,6 +60,7 @@ public class Play extends GameState{
 		
 		// ========= GAME OBJECTS ========
 		dragon = new Dragon(world);
+		
 		new Ground(world, 0);
 		new Ground(world, Game.V_HEIGHT / PPM);
 		
@@ -86,7 +91,7 @@ public class Play extends GameState{
 			
 			Vector2 newMeteorPos = 
 					new Vector2(
-							dragon.getWorldX()+ Game.V_WIDTH/2 / PPM, 
+							dragon.getWorldX()+ Game.V_WIDTH/10 / PPM, 
 							Game.V_HEIGHT / PPM);
 			entities.add(new Meteor(world, newMeteorPos));
 		}
@@ -98,7 +103,7 @@ public class Play extends GameState{
 			
 			float newStalactiteX = dragon.getWorldX()+ Game.V_WIDTH/2 / PPM;
 		
-			entities.add(new Stalactite(world, newStalactiteX));
+			//entities.add(new Stalactite(world, newStalactiteX));
 		}
 	}
 	@Override
@@ -107,17 +112,56 @@ public class Play extends GameState{
 		produceMeteors();
 		produceStalactites();
 		
+		dragon.update(dt);
+		
 		handleInput();
 		world.step(dt, 6, 2);		
 	}
 
 	@Override
 	public void render() {
-		//clear screen
+		// clear screen
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		//draw box2d world
-		b2dr.render(world, b2dCam.combined); 
+		//cam.position.set(dragon.getPosition().x * PPM + Game.V_WIDTH / 4,
+		//			Game.V_HEIGHT/2, 0
+		//		);
+		//cam.update();
+		
+		// draw box2d world
+		b2dr.render(world, b2dCam.combined);
+		
+		// draw dragon
+		sb.setProjectionMatrix(cam.combined);
+		dragon.render(sb);	
+		
+		sb.setProjectionMatrix(cam.combined);
+		// draw objects
+		
+		/*
+		sb.begin();
+		for(Meteor en : entities){
+			Sprite sprite = (Sprite) en.body.getUserData();
+			sprite.setPosition(en.body.getPosition().x - sprite.getWidth()/2,
+					en.body.getPosition().y - sprite.getHeight()/2);
+			sprite.setRotation(en.body.getAngle() * MathUtils.radiansToDegrees );
+			sprite.draw(sb);
+		}
+		sb.end();
+		*/
+		sb.begin();
+		world.getBodies(tmpBodies);
+		for(Body body : tmpBodies)
+			if(body.getUserData() != null && body.getUserData() instanceof Sprite){
+				Sprite sprite = (Sprite) body.getUserData();
+				sprite.setPosition(body.getPosition().x*PPM - sprite.getWidth()/2,
+						body.getPosition().y*PPM - sprite.getHeight()/2);
+				System.out.println("body " + body.getPosition().x + " , " + body.getPosition().y);
+				System.out.println("sprite " +sprite.getX() + " , " + sprite.getY());
+				sprite.setRotation((body.getAngle() * MathUtils.radiansToDegrees));
+				sprite.draw(sb);
+			}
+		sb.end();
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.aghacks.dragoncave;
 
+import com.aghacks.dragoncave.handlers.Content;
 import com.aghacks.dragoncave.handlers.GameStateManager;
 import com.aghacks.dragoncave.handlers.MyInputProcessor;
 import com.badlogic.gdx.ApplicationListener;
@@ -23,6 +24,8 @@ public class Game implements ApplicationListener {
 	
 	private GameStateManager gsm;
 	
+	public static Content res;
+	
 	@Override
 	public void create() {
 		
@@ -31,6 +34,12 @@ public class Game implements ApplicationListener {
 	    
 		Gdx.input.setInputProcessor(new MyInputProcessor());
 		sb = new SpriteBatch();
+		
+		res = new Content();
+		res.loadTexture("images/dragon.png", "dragon");
+		res.loadTexture("images/stalactite.png", "stalactite");
+		res.loadTexture("images/meteor.png", "meteor");
+		res.loadTexture("images/ground.png", "ground");
 		
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, V_WIDTH, V_HEIGHT);
@@ -71,7 +80,7 @@ public class Game implements ApplicationListener {
 
 	@Override
 	public void dispose() {
-		
+		res.disposeTexture("dragon");
 		
 	}
 	

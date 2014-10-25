@@ -13,8 +13,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Ground extends Entity{
-
+	
 	public Ground(World world, float y){
+		super("ground", V_WIDTH / PPM, 5 / PPM);
 		
 		BodyDef bdef = new BodyDef();
 		bdef.position.set(0 / PPM, y); //TODO: Maybe x to change
@@ -22,7 +23,7 @@ public class Ground extends Entity{
 		body = world.createBody(bdef);
 
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(V_WIDTH / PPM, 5 / PPM);
+		shape.setAsBox(this.bodyWidth, this.bodyHeight);
 		FixtureDef fdef = new FixtureDef();
 		fdef.friction=0.4f;
 		fdef.shape = shape;
