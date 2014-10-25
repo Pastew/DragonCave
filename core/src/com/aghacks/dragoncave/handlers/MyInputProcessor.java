@@ -34,8 +34,9 @@ public class MyInputProcessor implements InputProcessor{
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		if(screenX > Gdx.graphics.getWidth() *0.8f 
-				&& screenY > Gdx.graphics.getHeight()*0.8f)
-			Play.slowMotionStart();
+				&& screenY > Gdx.graphics.getHeight()*0.8f){
+			Play.slowMotionStart();		
+		}
 		
 		if(!startedSwipe && screenX < Game.V_WIDTH*0.7){
 			v1 = new Vector2(screenX, screenY);

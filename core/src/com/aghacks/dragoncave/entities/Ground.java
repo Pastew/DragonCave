@@ -26,7 +26,7 @@ public class Ground {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(bodyWidth, bodyHeight);
 		FixtureDef fdef = new FixtureDef();
-		fdef.friction=0.4f;
+		fdef.friction=0.9f;
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData(B2DVars.GROUND);
 	}

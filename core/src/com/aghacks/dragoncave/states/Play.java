@@ -2,11 +2,8 @@ package com.aghacks.dragoncave.states;
 
 import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
 
-import java.util.ArrayList;
-
 import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.entities.Dragon;
-import com.aghacks.dragoncave.entities.Entity;
 import com.aghacks.dragoncave.entities.Ground;
 import com.aghacks.dragoncave.entities.Meteor;
 import com.aghacks.dragoncave.entities.Stalactite;
@@ -14,19 +11,20 @@ import com.aghacks.dragoncave.handlers.B2DVars;
 import com.aghacks.dragoncave.handlers.Background;
 import com.aghacks.dragoncave.handlers.GameStateManager;
 import com.aghacks.dragoncave.handlers.MyContactListener;
+import com.aghacks.dragoncave.handlers.SlowMotionBar;
 import com.aghacks.dragoncave.handlers.Timer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-
 
 public class Play extends GameState{
 	
@@ -52,7 +50,7 @@ public class Play extends GameState{
 	
 	// respawn
 	private float stalactiteRespawnTime = 11.5f;
-	private float meteorRespawnTime = 10.5f;
+	private float meteorRespawnTime = 3.5f;
 	
 	// slow motion
 	private static boolean slowMotionOn = false;
@@ -62,7 +60,12 @@ public class Play extends GameState{
 	private Array<Body> tmpBodies = new Array<Body>();
 	
 	// sounds
-	Music music;
+	private static Music intro;
+	private static Music loop;
+	private static Music slowMotionSound;
+	
+	// slow motion bar
+	public static SlowMotionBar smBar;
 	
 	public Play(GameStateManager gsm) {
 		super(gsm);
@@ -98,8 +101,13 @@ public class Play extends GameState{
 		// camera pos X
 		camXPos = dragon.getPosition().x * PPM + Game.V_WIDTH / 4;
 		
-		music = Gdx.audio.newMusic(Gdx.files.internal("music/20141025-hackaton01.mp3"));
-		music.play();
+		intro = Gdx.audio.newMusic(Gdx.files.internal("music/intro.mp3"));
+		loop = Gdx.audio.newMusic(Gdx.files.internal("music/loop.mp3"));
+		slowMotionSound = Gdx.audio.newMusic(Gdx.files.internal("music/slowMotion.mp3"));
+		intro.play();
+		
+		// Slow Motion Bar
+		smBar = new SlowMotionBar();		
 	}
 
 	@Override
@@ -121,7 +129,7 @@ public class Play extends GameState{
 			
 			Vector2 newMeteorPos = 
 					new Vector2(
-							dragon.getWorldX()+ Game.V_WIDTH/2 / PPM, 
+							dragon.getWorldX()+ Game.V_WIDTH/10 / PPM, 
 							Game.V_HEIGHT / PPM);
 			meteors.add(new Meteor(world, newMeteorPos));
 			if(meteors.size > 5){
@@ -157,9 +165,16 @@ public class Play extends GameState{
 		produceStalactites();
 		
 		dragon.update(dt);
+		smBar.update();
 		
 		handleInput();
-		world.step(dt2, 6, 2);		
+		world.step(dt2, 6, 2);	
+		
+		if(!intro.isPlaying()){
+			loop.setLooping(true);
+			loop.play();
+		}
+		
 	}
 
 	@Override
@@ -167,22 +182,15 @@ public class Play extends GameState{
 		// clear screen
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		sb.setProjectionMatrix(hudCam.combined); // ??
-
-		bg.draw(sb);
-
-		//cam.position.set(dragon.getPosition().x * PPM + Game.V_WIDTH / 4, 
+		sb.setProjectionMatrix(hudCam.combined); // ??		
+		
+		bg.draw(sb);		
 		cam.position.set(camXPos, 
 				Game.V_HEIGHT/2, 
 				0);
 		cam.update();
 		
-		/*
-		if(Math.abs(dragon.getPosition().x * PPM + Game.V_WIDTH / 4 - camXPos) > Game.V_WIDTH/3)
-			shiftCamera();
-			*/
-		
-		// draw box2d world
+		// debug renderer
 		//b2dr.render(world, b2dCam.combined);
 		
 		// draw dragon
@@ -205,7 +213,9 @@ public class Play extends GameState{
 		sb.setProjectionMatrix(hudCam.combined); // ??
 		slowMotionSprite.draw(sb);
 		sb.end();
+		smBar.render();
 	}
+	
 	void shiftCamera(){
 		float shift =5f;
 		int left;
@@ -223,27 +233,57 @@ public class Play extends GameState{
 	}
 	
 	public static void slowMotionStart(){
-		//if(!slowMotionOn)
-		//	Game.STEP = 1/15f;
-		slowMotionOn = true;
-		bg.slowMotionOn();
-		camShift /= 2;
-		/*dragon.getBody().setLinearVelocity(dragon.getBody().getLinearVelocity().x*2,
-				dragon.getBody().getLinearVelocity().y);
-				*/
-
+		long currentTime = System.currentTimeMillis();
+		if(currentTime - smBar.getLastClick() >= SlowMotionBar.FROZEN_TIME) {
+			slowMotionOn = true;
+			bg.slowMotionOn();
+			camShift /= 2;
+			
+			dragon.slowMotionAnimation(true);
+			
+			if(loop.isPlaying())
+				turnVolumeDown(loop);
+			else if(intro.isPlaying())
+				turnVolumeDown(intro);
+			
+			slowMotionSound.play();
+			
+			smBar.decrease();
+			smBar.setLastClick(currentTime);
+		} else {
+			smBar.froze();
+		}
 	}
 	
 	public static void slowMotionStop(){
-		//if(slowMotionOn)
-		//	Game.STEP = 1/60f;
 		if(slowMotionOn==true){
 			bg.slowMotionOff();
 			camShift *= 2;
+			if(slowMotionSound.isPlaying())
+				slowMotionSound.stop();
 		}
 		slowMotionOn = false;
+		dragon.slowMotionAnimation(false);		
+		if(loop.isPlaying())
+			turnVolumeUp(loop);
+		else if(intro.isPlaying())
+			turnVolumeUp(intro);
+		
+		smBar.increase();
+		long currentTime = System.currentTimeMillis();
+		if(currentTime - smBar.getLastClick() < SlowMotionBar.FROZEN_TIME) {
+			smBar.froze();
+		}
 	}
 	
+	private static void turnVolumeUp(Music m) {
+		m.setVolume(m.getVolume()*4);
+	}
+	
+	private static void turnVolumeDown(Music m) {
+		m.setVolume(m.getVolume()/4);
+	}
+
 	public static void swipe(Vector2 v1, Vector2 v2){
 		//System.out.println("swipe!");
 		if(v1==null || v2==null)

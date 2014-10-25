@@ -13,11 +13,10 @@ public class MyContactListener implements ContactListener {
 	public void beginContact(Contact c) {
 		Fixture fa = c.getFixtureA();
 		Fixture fb = c.getFixtureB();
-
-		if(fa.getUserData().equals(B2DVars.ENEMY) && fa.getUserData().equals(B2DVars.DRAGON) ){
+		if(fa.getUserData().equals(B2DVars.ENEMY) && fb.getUserData().equals(B2DVars.DRAGON) ){
 			Play.dragon.die();
 		}
-		if(fb.getUserData().equals(B2DVars.ENEMY) && fb.getUserData().equals(B2DVars.DRAGON) ){
+		if(fb.getUserData().equals(B2DVars.ENEMY) && fa.getUserData().equals(B2DVars.DRAGON) ){
 			Play.dragon.die();
 		}
 	}

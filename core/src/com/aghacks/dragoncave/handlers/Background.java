@@ -11,12 +11,12 @@ public class Background {
 	private float bgOffset = 0;
 	private float posX;
 	
-	private float shift = B2DVars.X_SPEED/2;
+	private float shift = B2DVars.X_SPEED*2; //TODO: /2
 	
 	public Background(){
-		bg = new Sprite(new Texture("images/bg2.png"));
+		bg = new Sprite(new Texture("images/bg.png"));
 		//bg2 = new Sprite(new Texture("images/bg.png"));
-		bg.setSize(bg.getWidth(), Gdx.graphics.getHeight());
+		bg.setSize(bg.getWidth(), bg.getHeight());
 	}
 	
 	public void draw(SpriteBatch sb){

@@ -37,7 +37,7 @@ public class Meteor{
 		
 		body.createFixture(fdef).setUserData(B2DVars.ENEMY);
 		
-		Vector2 vel = new Vector2(-B2DVars.X_SPEED, -5f);
+		Vector2 vel = new Vector2(-B2DVars.X_SPEED, 0);
 		body.setLinearVelocity(vel);	
 		
 		

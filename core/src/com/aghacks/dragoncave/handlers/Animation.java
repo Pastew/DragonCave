@@ -50,4 +50,12 @@ public class Animation {
 	
 	public TextureRegion getFrame() { return frames[currentFrame]; }
 	public int getTimesPlayer() { return timesPlayed; }
+	
+	/**
+	 * Sets new animation speed
+	 * @param dt 1/12f prefered
+	 */
+	public void setAnimationSpeed(float dt){
+		this.delay = dt;
+	}
 }

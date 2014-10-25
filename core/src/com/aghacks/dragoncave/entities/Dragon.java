@@ -2,12 +2,10 @@ package com.aghacks.dragoncave.entities;
 
 import static com.aghacks.dragoncave.Game.V_HEIGHT;
 import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
-import jdk.nashorn.internal.runtime.regexp.joni.ApplyCaseFoldArg;
 
 import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.handlers.B2DSprite;
 import com.aghacks.dragoncave.handlers.B2DVars;
-import com.aghacks.dragoncave.handlers.Timer;
 import com.aghacks.dragoncave.states.Play;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -24,7 +22,7 @@ public class Dragon extends B2DSprite{
 	private boolean alive = true;
 
 	//private Timer swipeTimer;
-	private float desiredHeight = V_HEIGHT /3 / PPM;
+	private float desiredHeight = V_HEIGHT /3 ;
 	
 	private final static float bodyWidth = V_HEIGHT/16 / PPM;
 	private final static float bodyHeight = V_HEIGHT/16 / PPM;
@@ -56,6 +54,7 @@ public class Dragon extends B2DSprite{
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
 		fdef.density = 0.99f;
+		fdef.friction= 0.6f;
 		
 		body.createFixture(fdef).setUserData(B2DVars.DRAGON);
 		
@@ -66,18 +65,28 @@ public class Dragon extends B2DSprite{
 
 	public void fly(){
 		if(!alive)
-			return;
-		
-		if(body.getPosition().y < desiredHeight && canJump){
+			return;			
+		 
+		// === FLY UP ===
+		if(body.getPosition().y * PPM < desiredHeight && canJump){
 			body.applyLinearImpulse(new Vector2(0, 4f), 
 					body.getWorldCenter(), true);
-			System.out.println("JUMP");
 			
 			canJump = false;
 		}
 		
 		if(body.getLinearVelocity().y < 0 )
 			canJump = true;
+		
+		// === DON'T GO OUT OF SCREEN ===
+		//System.out.println("BODY " + body.getPosition().x * PPM);
+		//System.out.println("CAM " + (Play.camXPos-Game.V_WIDTH/2));
+		
+		if(body.getPosition().x * PPM  < Play.camXPos-Game.V_WIDTH/2){
+			body.applyForceToCenter(new Vector2(2, 0), true);
+			//System.out.println("ADJUST X!");
+			//System.out.println(Play.camXPos-Game.V_WIDTH);
+		}
 		
 		// ======= SWIPE =============
 		
@@ -117,8 +126,7 @@ public class Dragon extends B2DSprite{
 			body.applyLinearImpulse(new Vector2(swipePower, 0), body.getWorldCenter(), true);
 			//body.setLinearVelocity(new Vector2(swipePower, 0));
 			swipingRight = true;
-		}
-		
+		}		
 	}
 	
 	public float getWorldX() {
@@ -130,17 +138,22 @@ public class Dragon extends B2DSprite{
 	}
 
 	public void die() {
+		if(!alive)
+			return;
+		
 		alive = false;		
+		this.animation.setAnimationSpeed(0);
+		body.setLinearVelocity(-3,0);
 	}
-/*
-	private void goBack(Vector2 impulse) {
-		goBackImpulse = impulse;
-		shouldGoBack = true;		
-	}
-*/
 	
 	public Body getBody(){
 		return this.body;
 	}
 	
+	public void slowMotionAnimation(boolean slow){
+		if(slow)
+			this.animation.setAnimationSpeed(1/8f);
+		else
+			this.animation.setAnimationSpeed(1/12f);
+	}	
 }
