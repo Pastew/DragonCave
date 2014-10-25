@@ -37,7 +37,7 @@ public class Play extends GameState{
 	// camera
 	public static Box2DDebugRenderer b2dr;	
 	public static OrthographicCamera b2dCam;
-	private float camXPos;
+	public static float camXPos;
 	
 	// entities
 	public static Dragon dragon;
@@ -148,7 +148,7 @@ public class Play extends GameState{
 	public void update(float dt) {
 		float dt2 = dt;
 		if(slowMotionOn)
-			dt2 = 1/150f;
+			dt2 = 1/300f;
 		
 		camXPos += camShift;
 		
@@ -183,7 +183,7 @@ public class Play extends GameState{
 			*/
 		
 		// draw box2d world
-		b2dr.render(world, b2dCam.combined);
+		//b2dr.render(world, b2dCam.combined);
 		
 		// draw dragon
 		sb.setProjectionMatrix(cam.combined);
@@ -228,8 +228,9 @@ public class Play extends GameState{
 		slowMotionOn = true;
 		bg.slowMotionOn();
 		camShift /= 2;
-		dragon.getBody().setLinearVelocity(dragon.getBody().getLinearVelocity().x*2,
+		/*dragon.getBody().setLinearVelocity(dragon.getBody().getLinearVelocity().x*2,
 				dragon.getBody().getLinearVelocity().y);
+				*/
 
 	}
 	
@@ -241,26 +242,27 @@ public class Play extends GameState{
 			camShift *= 2;
 		}
 		slowMotionOn = false;
-
 	}
 	
 	public static void swipe(Vector2 v1, Vector2 v2){
 		//System.out.println("swipe!");
-		
+		if(v1==null || v2==null)
+			return;
 		Vector2 impulse = new Vector2(v2.sub(v1));
 		impulse.x /= PPM;
 		impulse.y /= -PPM;	// - bo os Y jest w druga strone
-		System.out.println("przed " + impulse);
+		//System.out.println("przed " + impulse);
 		//float limit = 5f;
 		//impulse.x = impulse.x % limit;
 		//impulse.y = impulse.y % limit;
-		System.out.println(impulse.x);
-		float power = 10;
+		//System.out.println(impulse.x);
+		//float power = 10;
+		/*
 		if(impulse.x < -1 ) 
 			impulse.x = -power;
 		else 
 			impulse.x = power;
-		
+			*/
 		impulse.y = 0;
 		dragon.swipe(impulse);
 		//System.out.println("po " + impulse);

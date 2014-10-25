@@ -44,8 +44,8 @@ public class B2DSprite {
 			bodyHeight/2,
 			bodyWidth,
 			bodyHeight,
-			1,
-			1,
+			1.5f,
+			1.5f,
 			(float)(body.getAngle() * MathUtils.radiansToDegrees)
 		);
 		sb.end();

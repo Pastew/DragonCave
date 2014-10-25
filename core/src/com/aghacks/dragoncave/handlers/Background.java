@@ -7,28 +7,28 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Background {
 
-	private Sprite bg1, bg2;
+	private Sprite bg, bg2;
 	private float bgOffset = 0;
 	private float posX;
 	
 	private float shift = B2DVars.X_SPEED/2;
 	
 	public Background(){
-		bg1 = new Sprite(new Texture("images/bg.png"));
+		bg = new Sprite(new Texture("images/bg2.png"));
 		//bg2 = new Sprite(new Texture("images/bg.png"));
-		bg1.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		bg.setSize(bg.getWidth(), Gdx.graphics.getHeight());
 	}
 	
 	public void draw(SpriteBatch sb){
 		sb.begin();
 		posX -= shift;
-		bg1.setPosition(posX, 0);
-		bg1.draw(sb);
+		bg.setPosition(posX, 0);
+		bg.draw(sb);
 		
-		bg1.setPosition(posX+Gdx.graphics.getWidth(), 0);
-		bg1.draw(sb);
+		bg.setPosition(posX+bg.getWidth(), 0);
+		bg.draw(sb);
 		
-		if(posX < -Gdx.graphics.getWidth())
+		if(posX < -bg.getWidth())
 			posX = 0;
 		sb.end();
 	}
@@ -37,6 +37,6 @@ public class Background {
 		shift /= 2;
 	}
 	public void slowMotionOff() {
-		shift *=2;
+		shift *= 2;
 	}
 }

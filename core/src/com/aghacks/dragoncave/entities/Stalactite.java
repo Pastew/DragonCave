@@ -40,7 +40,7 @@ public class Stalactite{
 		fdef.restitution = 0.2f;
 		fdef.friction = 0.1f;
 		
-		body.createFixture(fdef).setUserData(B2DVars.STALACTITE);
+		body.createFixture(fdef).setUserData(B2DVars.ENEMY);
 		
 		Sprite boxSprite = new Sprite(new Texture("images/stalactite.png"));
 		boxSprite.setSize(bodyWidth*2 * PPM, bodyHeight*2 * PPM);

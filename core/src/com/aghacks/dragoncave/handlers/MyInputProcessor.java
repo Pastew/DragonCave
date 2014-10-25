@@ -2,6 +2,7 @@ package com.aghacks.dragoncave.handlers;
 
 import static com.aghacks.dragoncave.states.Play.b2dCam;
 
+import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.states.Play;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -36,7 +37,7 @@ public class MyInputProcessor implements InputProcessor{
 				&& screenY > Gdx.graphics.getHeight()*0.8f)
 			Play.slowMotionStart();
 		
-		if(!startedSwipe){
+		if(!startedSwipe && screenX < Game.V_WIDTH*0.7){
 			v1 = new Vector2(screenX, screenY);
 			startedSwipe = true;
 		}
@@ -46,10 +47,13 @@ public class MyInputProcessor implements InputProcessor{
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		Play.slowMotionStop();
+		if(!startedSwipe)
+			Play.slowMotionStop();
+		
+		if(screenX > Game.V_WIDTH*0.8f)
+			return false;
 		
 		v2 = new Vector2(screenX, screenY);
-		
 		Play.swipe(v1, v2);
 		startedSwipe = false;
 		return false;
