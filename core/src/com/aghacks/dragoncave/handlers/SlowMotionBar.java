@@ -94,4 +94,9 @@ public class SlowMotionBar {
 	}
 	
 	enum State { NOT_RUNNING, INCREASING, DECREASING }
+
+	public void reset() {
+		this.amount = amountMax;
+		
+	}
 }

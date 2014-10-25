@@ -9,6 +9,7 @@ import com.aghacks.dragoncave.entities.Meteor;
 import com.aghacks.dragoncave.entities.Stalactite;
 import com.aghacks.dragoncave.handlers.B2DVars;
 import com.aghacks.dragoncave.handlers.Background;
+import com.aghacks.dragoncave.handlers.GameOverDialog;
 import com.aghacks.dragoncave.handlers.GameStateManager;
 import com.aghacks.dragoncave.handlers.MyContactListener;
 import com.aghacks.dragoncave.handlers.SlowMotionBar;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -27,8 +29,10 @@ import com.badlogic.gdx.utils.Array;
 
 public class Play extends GameState{
 	
+	private boolean gameOver = false;
+
 	// box2d
-	private World world;
+	public static World world;
 	private MyContactListener cl;
 
 	// camera
@@ -49,13 +53,11 @@ public class Play extends GameState{
 	
 	// respawn
 	private float stalactiteRespawnTime = 11.5f;
-	private float meteorRespawnTime = 3.5f;
+	private float meteorRespawnTime = 1.5f;
 	
 	// slow motion
 	private static boolean slowMotionOn = false;
-
-	private static float camShift = B2DVars.X_SPEED;
-	
+	private static float camShift = B2DVars.X_SPEED;	
 	private Array<Body> tmpBodies = new Array<Body>();
 	
 	// sounds
@@ -66,11 +68,18 @@ public class Play extends GameState{
 	// slow motion bar
 	public static SlowMotionBar smBar;
 	
+	// gameOver dialog
+	private GameOverDialog gameOverDialogProcessor;
+	
+	BitmapFont font;
+	
 	public Play(GameStateManager gsm) {
 		super(gsm);
 		
 		world = new World(new Vector2(0,-9.81f), true);
 		
+		bg = new Background();
+
 		cl = new MyContactListener();
 		world.setContactListener(cl);
 		b2dr = new Box2DDebugRenderer();
@@ -78,34 +87,42 @@ public class Play extends GameState{
 		// box2d cam
 		b2dCam = new OrthographicCamera();
 		b2dCam.setToOrtho(false, Game.V_WIDTH / PPM, Game.V_HEIGHT / PPM);
-				
-		// ========= GAME OBJECTS ========
-		dragon = new Dragon(world);
 		
+		gameOverDialogProcessor = new GameOverDialog(this);
+		
+		// ===== SETTING OBJECTS =======
 		new Ground(world, 0);
 		new Ground(world, Game.V_HEIGHT / PPM);
-		
-		// meteors
-		meteorTimer = new Timer(meteorRespawnTime);
-		meteorTimer.start();
-		// stalactites
-		stalactiteTimer = new Timer(stalactiteRespawnTime);
-		stalactiteTimer.start();
-		
-		bg = new Background();
-			
-		// camera pos X
-		camXPos = dragon.getPosition().x * PPM + Game.V_WIDTH / 4;
 		
 		intro = Game.res.getMusic("intro");
 		loop = Game.res.getMusic("loop");
 		slowMotionSound = Game.res.getMusic("slowMotion");
-		intro.play();
 		
-		// Slow Motion Bar
-		smBar = new SlowMotionBar();		
+		smBar = new SlowMotionBar();	
+		
+		gameOver=false;
+		b2dCam.setToOrtho(false, Game.V_WIDTH / PPM, Game.V_HEIGHT / PPM);
+		// ========= GAME OBJECTS ========
+		dragon = new Dragon(world);
+		
+		// meteors
+		meteorTimer = new Timer(meteorRespawnTime);
+		meteorTimer.start();
+		
+		// stalactites
+		stalactiteTimer = new Timer(stalactiteRespawnTime);
+		stalactiteTimer.start();		
+			
+		// camera pos X
+		camXPos = dragon.getPosition().x * PPM + Game.V_WIDTH / 4;		
+		
+		intro.play();	
+		
+		// font
+		//font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"),
+		//         Gdx.files.internal("fonts/font.png"), false);
 	}
-
+	
 	@Override
 	public void handleInput() {	
 	}
@@ -161,6 +178,8 @@ public class Play extends GameState{
 			loop.setLooping(true);
 			loop.play();
 		}		
+		if(dragon.isDead())
+			gameOver();
 	}
 
 	@Override
@@ -171,13 +190,11 @@ public class Play extends GameState{
 		sb.setProjectionMatrix(hudCam.combined);	
 		
 		bg.draw(sb);		
-		cam.position.set(camXPos, 
-				Game.V_HEIGHT/2, 
-				0);
+		cam.position.set(camXPos, Game.V_HEIGHT/2,0);
 		cam.update();
 		
 		// debug renderer
-		//b2dr.render(world, b2dCam.combined);
+		 b2dr.render(world, b2dCam.combined);
 		
 		// draw dragon
 		sb.setProjectionMatrix(cam.combined);
@@ -200,6 +217,14 @@ public class Play extends GameState{
 			sb.setProjectionMatrix(hudCam.combined); // ??				
 		sb.end();	
 		smBar.render(sb);
+		
+		if(gameOver){
+			gameOverDialogProcessor.render(sb);
+		}
+		// some  text TODO delete	
+		//sb.begin();
+		//font.draw(sb, "Jestem bardzo ladna czcionka hehe", 20, Game.V_HEIGHT - 50);
+		//sb.end();	
 	}
 	
 	void shiftCamera(){
@@ -214,7 +239,7 @@ public class Play extends GameState{
 
 	@Override
 	public void dispose() {
-		
+		//this.font.dispose();	
 	}
 	
 	public static void slowMotionStart(){
@@ -279,5 +304,29 @@ public class Play extends GameState{
 		impulse.y = 0;
 		dragon.swipe(impulse);
 	}
+
+	public void gameOver() {
+		gameOver=true;		
+		Gdx.input.setInputProcessor(gameOverDialogProcessor);
+	}
 	
+	public  void playAgain(){
+		Gdx.input.setInputProcessor(Game.gameInputProcessor);
+		System.out.println("PLAY AGAIN");
+	}	
+	
+	/*
+	private void cleanUpBodies(){
+		//dragon.createBody(world);
+		world.destroyBody(dragon.getBody());
+		
+		System.out.println("new drag");
+		for(Meteor m : meteors)
+			m.destroy(world);
+		
+		for(Stalactite s : stalactites)
+			s.destroy(world);	
+		
+	}
+	*/
 }

@@ -42,7 +42,7 @@ public class Dragon extends B2DSprite{
 		//swipeTimer = new Timer(0.5f);
 	}
 	
-	private static Body createBody(World world){
+	public static Body createBody(World world){
 		BodyDef bdef = new BodyDef();
 		bdef.position.set(20 / PPM, V_HEIGHT/2 / PPM); // TODO: Change x
 		bdef.type = BodyType.DynamicBody;
@@ -146,6 +146,7 @@ public class Dragon extends B2DSprite{
 		alive = false;		
 		this.animation.setAnimationSpeed(0);
 		body.setLinearVelocity(-3,0);
+		//Play.world.destroyBody(this.body);
 	}
 	
 	public Body getBody(){
@@ -157,5 +158,9 @@ public class Dragon extends B2DSprite{
 			this.animation.setAnimationSpeed(1/8f);
 		else
 			this.animation.setAnimationSpeed(1/12f);
+	}
+
+	public boolean isDead() {
+		return !alive;
 	}	
 }

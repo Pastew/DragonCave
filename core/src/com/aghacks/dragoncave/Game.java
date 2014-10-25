@@ -7,6 +7,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.aghacks.dragoncave.handlers.GameOverDialog;
 
 public class Game implements ApplicationListener {
 
@@ -26,19 +27,25 @@ public class Game implements ApplicationListener {
 	
 	public static Content res;
 	
+	public static MyInputProcessor gameInputProcessor;
+
 	@Override
 	public void create() {
 		
 		V_WIDTH = Gdx.graphics.getWidth();
 	    V_HEIGHT = Gdx.graphics.getHeight();
 	    
-		Gdx.input.setInputProcessor(new MyInputProcessor());
+		Gdx.input.setInputProcessor(gameInputProcessor);
 		sb = new SpriteBatch();
 		
 		res = new Content();
 		res.loadTexture("images/bg.png", "bg");
 		res.loadTexture("images/dragon.png", "dragon");
 		res.loadTexture("images/slowmo.png", "slowMotion");
+		
+		res.loadTexture("images/again.png", "again");
+		res.loadTexture("images/menuback.png", "back");
+		res.loadTexture("images/over.png", "gameOverDialog");
 		
 		res.loadTexture("images/bluebullet.png", "bluebullet");
 		res.loadTexture("images/greenbullet.png", "greenbullet");
@@ -68,7 +75,9 @@ public class Game implements ApplicationListener {
 		hudCam = new OrthographicCamera();
 		hudCam.setToOrtho(false, V_WIDTH, V_HEIGHT);
 		
-		gsm = new GameStateManager(this);		
+		gsm = new GameStateManager(this);
+		
+	    gameInputProcessor = new MyInputProcessor();
 	}
 
 	@Override
@@ -107,5 +116,9 @@ public class Game implements ApplicationListener {
 	
 	public SpriteBatch getSpriteBatch(){ return sb; };
 	public OrthographicCamera getCamera(){ return cam; };
-	public OrthographicCamera getHudCamera(){ return hudCam; };	
+	public OrthographicCamera getHudCamera(){ return hudCam; }
+
+	public static void exit() {
+		Gdx.app.exit();
+	};	
 }

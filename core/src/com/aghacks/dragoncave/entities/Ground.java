@@ -1,8 +1,7 @@
 package com.aghacks.dragoncave.entities;
 
-import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
-import static com.aghacks.dragoncave.Game.V_HEIGHT;
 import static com.aghacks.dragoncave.Game.V_WIDTH;
+import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
 
 import com.aghacks.dragoncave.handlers.B2DVars;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Ground {
+	Body body;
 	
 	public Ground(World world, float y){
 		float bodyWidth = V_WIDTH;
@@ -21,7 +21,7 @@ public class Ground {
 		BodyDef bdef = new BodyDef();
 		bdef.position.set(0 / PPM, y); //TODO: Maybe x to change
 		bdef.type = BodyType.StaticBody;
-		Body body = world.createBody(bdef);
+		body = world.createBody(bdef);
 
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(bodyWidth, bodyHeight);
@@ -29,5 +29,9 @@ public class Ground {
 		fdef.friction=0.9f;
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData(B2DVars.GROUND);
+	}
+	
+	public Body getBody(){
+		return body;
 	}
 }
