@@ -51,8 +51,8 @@ public class Play extends GameState{
 	private static Background bg;
 	
 	// respawn
-	private float stalactiteRespawnTime = 1.5f;
-	private float meteorRespawnTime = 0.5f;
+	private float stalactiteRespawnTime = 11.5f;
+	private float meteorRespawnTime = 10.5f;
 	
 	// slow motion
 	private static boolean slowMotionOn = false;
@@ -183,7 +183,7 @@ public class Play extends GameState{
 			*/
 		
 		// draw box2d world
-		//b2dr.render(world, b2dCam.combined);
+		b2dr.render(world, b2dCam.combined);
 		
 		// draw dragon
 		sb.setProjectionMatrix(cam.combined);
@@ -251,11 +251,19 @@ public class Play extends GameState{
 		impulse.x /= PPM;
 		impulse.y /= -PPM;	// - bo os Y jest w druga strone
 		System.out.println("przed " + impulse);
-		float limit = 5f;
-		impulse.x = impulse.x % limit;
-		impulse.y = impulse.y % limit;
+		//float limit = 5f;
+		//impulse.x = impulse.x % limit;
+		//impulse.y = impulse.y % limit;
+		System.out.println(impulse.x);
+		float power = 10;
+		if(impulse.x < -1 ) 
+			impulse.x = -power;
+		else 
+			impulse.x = power;
+		
+		impulse.y = 0;
 		dragon.swipe(impulse);
-		System.out.println("po " + impulse);
+		//System.out.println("po " + impulse);
 
 	}
 	

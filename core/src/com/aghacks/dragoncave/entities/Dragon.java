@@ -2,6 +2,7 @@ package com.aghacks.dragoncave.entities;
 
 import static com.aghacks.dragoncave.Game.V_HEIGHT;
 import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
+import jdk.nashorn.internal.runtime.regexp.joni.ApplyCaseFoldArg;
 
 import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.handlers.B2DSprite;
@@ -30,6 +31,10 @@ public class Dragon extends B2DSprite{
 	private final static float bodyHeight = V_HEIGHT/16 / PPM;
 	
 	private boolean canJump = true;
+	private boolean swipeLeft = false;
+	private boolean swipeRight = false;
+	private boolean swipingLeft = false;
+	private boolean swipingRight = false;
 
 	
 	public Dragon(World world){
@@ -39,7 +44,7 @@ public class Dragon extends B2DSprite{
 		TextureRegion[] sprites = TextureRegion.split(tex, 322, 290)[0];
 		setAnimation(sprites, 1/12f, bodyWidth*PPM*2, bodyHeight*PPM*2);		
 		
-		swipeTimer = new Timer(1f);
+		swipeTimer = new Timer(0.5f);
 	}
 	
 	private static Body createBody(World world){
@@ -75,13 +80,32 @@ public class Dragon extends B2DSprite{
 		
 		if(body.getLinearVelocity().y < 0)
 			canJump = true;
-		
-		if(shouldGoBack && swipeTimer.isDone()){
-			goBackImpulse.x *= -1;
-			goBackImpulse.y *= -1;
-			body.applyLinearImpulse(goBackImpulse, body.getWorldCenter(), true);
+		/*
+		if(shouldGoBack && body.getPosition().x*PPM < Game.V_WIDTH){
+			//goBackImpulse.x *= -1;
+			//goBackImpulse.y *= -1;
+			//body.applyLinearImpulse(goBackImpulse, body.getWorldCenter(), true);
+			body.setLinearVelocity(B2DVars.X_SPEED, 0f);
 			shouldGoBack = false;
 		}
+		*/
+		
+		if(swipingLeft){
+			if(body.getPosition().x*PPM < Game.V_WIDTH * 0.15f){
+				body.setLinearVelocity(B2DVars.X_SPEED, 0);
+				swipingLeft = false;
+			}			
+		}
+		
+		if(swipingRight){
+			if(body.getPosition().x*PPM > Game.V_WIDTH * 0.5f){
+				body.setLinearVelocity(0, 0);
+				swipingRight = false;
+			}			
+		}
+		
+		//if(body.getPosition().x > Game.V_WIDTH/2 / PPM)
+		//	body.setLinearVelocity(0,0);
 	}
 
 	public float getWorldX() {
@@ -97,15 +121,28 @@ public class Dragon extends B2DSprite{
 	}
 
 	public void swipe(Vector2 impulse) {
-		body.applyLinearImpulse(impulse, body.getWorldCenter(),  true);
+		//body.applyLinearImpulse(impulse, body.getWorldCenter(),  true);
+		body.setLinearVelocity(impulse);
 		swipeTimer.start();
-		goBack(impulse);
+		float power = 10f;
+		
+		if(impulse.x < -0.5f){
+			body.applyLinearImpulse(new Vector2(-power, 0), body.getWorldCenter(), true);
+			swipingLeft = true;
+		}
+		else if(impulse.x > 0.5f){
+			body.applyLinearImpulse(new Vector2(power, 0), body.getWorldCenter(), true);
+			swipingRight = true;
+		}
+		//goBack(impulse);
+		
 	}
-
+/*
 	private void goBack(Vector2 impulse) {
 		goBackImpulse = impulse;
-		//shouldGoBack = true;		
+		shouldGoBack = true;		
 	}
+*/
 	
 	public Body getBody(){
 		return this.body;
