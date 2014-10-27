@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:title="Your name"
+        android:key="username"
+        android:summary="Please enter your nickname"/>
+    <CheckBoxPreference
+        android:title="Option1"
+        android:defaultValue="false"
+        android:summary="Option1 Descirption"
+        android:key="option1" />
+    <CheckBoxPreference
+        android:title="Option2"
+        android:defaultValue="false"
+        android:summary="Option2 Descirption"
+        android:key="option2" />
+    <CheckBoxPreference
+        android:title="Option3"
+        android:defaultValue="false"
+        android:summary="Option3 Descirption"
+        android:key="option3" />
+    <ListPreference
+        android:title="ListOption1"
+        android:summary="ListOption1 Description"
+        android:key="listoption1"
+        android:defaultValue="1"
+        android:entries="@array/listArray"
+        android:entryValues="@array/listValues" />
+</PreferenceScreen>

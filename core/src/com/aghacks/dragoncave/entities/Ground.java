@@ -1,7 +1,8 @@
 package com.aghacks.dragoncave.entities;
 
-import static com.aghacks.dragoncave.Game.V_WIDTH;
 import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
+import static com.aghacks.dragoncave.Game.V_HEIGHT;
+import static com.aghacks.dragoncave.Game.V_WIDTH;
 
 import com.aghacks.dragoncave.handlers.B2DVars;
 import com.badlogic.gdx.physics.box2d.Body;

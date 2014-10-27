@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.aghacks.dragoncave.android"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="1.1" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="20" />
+    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="20" />
 
     <application
         android:allowBackup="true"
@@ -12,14 +12,71 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
-            android:name="com.aghacks.dragoncave.android.AndroidLauncher"
-            android:label="@string/app_name" 
-            android:screenOrientation="landscape"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+            android:name=".menu.MenuActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".menu.achievements.AchievementsActivity"
+            android:label="@string/title_activity_achievements"
+            android:parentActivityName=".menu.MenuActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.Dialog" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="aghacks.com.dragoncave.menu.MenuActivity" />
+        </activity>
+        <activity
+            android:name=".menu.shop.ShopActivity"
+            android:label="@string/title_activity_shop"
+            android:parentActivityName=".menu.MenuActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.Dialog" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="aghacks.com.dragoncave.menu.MenuActivity" />
+        </activity>
+        <activity
+            android:name=".menu.highscores.HighScoresActivity"
+            android:label="@string/title_activity_high_scores"
+            android:parentActivityName=".menu.MenuActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.Dialog" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="aghacks.com.dragoncave.menu.MenuActivity" />
+        </activity>
+        <activity
+            android:name=".menu.HelpActivity"
+            android:label="@string/title_activity_help"
+            android:parentActivityName=".menu.MenuActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.Dialog" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="aghacks.com.dragoncave.menu.MenuActivity" />
+        </activity>
+        <activity
+            android:name=".menu.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".menu.MenuActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="aghacks.com.dragoncave.menu.MenuActivity" />
+        </activity>
+        <activity
+            android:name="com.aghacks.dragoncave.android.AndroidLauncher"
+            android:label="@string/app_name" 
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
         </activity>
     </application>
 

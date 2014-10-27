@@ -70,7 +70,7 @@ public class GameOverDialog implements InputProcessor{
 			play.playAgain();
 		
 		if(touchOn(screenX, Gdx.graphics.getHeight()-screenY, back))
-			Game.exit();
+			Gdx.app.exit();
 		
 		return false;
 	}

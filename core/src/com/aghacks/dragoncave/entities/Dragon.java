@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -21,30 +22,29 @@ public class Dragon extends B2DSprite{
 	
 	private boolean alive = true;
 
-	//private Timer swipeTimer;
-	private float desiredHeight = V_HEIGHT /3 ;
+	private static float lowestHeight = V_HEIGHT * 0.35f ;
+	private float maxHeight = V_HEIGHT * 0.5f ;
 	
-	private final static float bodyWidth = V_HEIGHT/16 / PPM;
-	private final static float bodyHeight = V_HEIGHT/16 / PPM;
+	private float yPower = 2f;
+	private float xPower = 0.5f;
 	
-	private boolean canJump = true;
+	private final static float bodyWidth = V_HEIGHT / 16 / PPM;
+	private final static float bodyHeight = V_HEIGHT / 16 / PPM;
+	
 	private boolean swipingLeft = false;
 	private boolean swipingRight = false;
-
 	
 	public Dragon(World world){
 		super(createBody(world));
-		
+				
 		Texture tex = Game.res.getTexture("dragon");
 		TextureRegion[] sprites = TextureRegion.split(tex, 319, 228)[0];
 		setAnimation(sprites, 1/12f, bodyWidth*PPM*2, bodyHeight*PPM*2);		
-		
-		//swipeTimer = new Timer(0.5f);
 	}
 	
-	public static Body createBody(World world){
+	private static Body createBody(World world){
 		BodyDef bdef = new BodyDef();
-		bdef.position.set(20 / PPM, V_HEIGHT/2 / PPM); // TODO: Change x
+		bdef.position.set(5 / PPM, lowestHeight / PPM); 
 		bdef.type = BodyType.DynamicBody;
 		Body body = world.createBody(bdef);
 		
@@ -53,10 +53,28 @@ public class Dragon extends B2DSprite{
 		
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
-		fdef.density = 0.99f;
+		
+		
+		//android
+		//fdef.density = 3.f;
+		
+		//pc
+		fdef.density = 1.5f;
+		
+		
 		fdef.friction= 0.6f;
 		
-		body.createFixture(fdef).setUserData(B2DVars.DRAGON);
+		Fixture fixture = null;
+		//should weight 4kg
+		//while(true) {
+			fixture = body.createFixture(fdef);
+		//	if(body.getMass() > 3.8f)
+		//		break;
+		//	fdef.density*=1.1f;
+		//	body.destroyFixture(fixture);
+		//}
+		fixture.setUserData(B2DVars.DRAGON);
+		System.out.println(" OStateczna masa " + body.getMass());
 		
 		body.setLinearVelocity(B2DVars.X_SPEED, 0);
 		
@@ -66,26 +84,27 @@ public class Dragon extends B2DSprite{
 	public void fly(){
 		if(!alive)
 			return;			
-		 
+		 float posY = body.getPosition().y * PPM;
 		// === FLY UP ===
-		if(body.getPosition().y * PPM < desiredHeight && canJump){
-			body.applyLinearImpulse(new Vector2(0, 4f), 
+		if(posY  < lowestHeight){
+			body.applyLinearImpulse(new Vector2(0, yPower), 
 					body.getWorldCenter(), true);
-			
-			canJump = false;
+		}
+		// if too high
+		if(posY > maxHeight){
+			body.setLinearVelocity(body.getLinearVelocity().x, 0);
 		}
 		
-		if(body.getLinearVelocity().y < 0 )
-			canJump = true;
-		
-		// === DON'T GO OUT OF SCREEN ===
-		//System.out.println("BODY " + body.getPosition().x * PPM);
-		//System.out.println("CAM " + (Play.camXPos-Game.V_WIDTH/2));
-		
+		// === DON'T GO OUT OF SCREEN ===	
+		//left side
 		if(body.getPosition().x * PPM  < Play.camXPos-Game.V_WIDTH/2){
-			body.applyForceToCenter(new Vector2(2, 0), true);
-			//System.out.println("ADJUST X!");
-			//System.out.println(Play.camXPos-Game.V_WIDTH);
+			//body.setLinearVelocity(0,body.getLinearVelocity().y);
+			body.applyForceToCenter(new Vector2(2,0),true);
+		}
+		//right side
+		if(body.getPosition().x * PPM  > Play.camXPos +Game.V_WIDTH * 0.9f){
+			//body.applyForceToCenter(new Vector2(-xPower, 0), true);
+			body.setLinearVelocity(0,body.getLinearVelocity().y);
 		}
 		
 		// ======= SWIPE =============
@@ -95,36 +114,35 @@ public class Dragon extends B2DSprite{
 			if(body.getPosition().x* PPM <  Play.camXPos - Game.V_WIDTH * 0.4f ){
 				body.setLinearVelocity(B2DVars.X_SPEED, 0);
 				swipingLeft = false;
-				System.out.println("LEFT SWIPE END");
-				canJump=true;
 			}			
 		}
 		
 		if(swipingRight){
-			if(body.getPosition().x*PPM >  Play.camXPos - Game.V_WIDTH * 0.1f){
+			if(body.getPosition().x*PPM >  Play.camXPos + Game.V_WIDTH * 0.1f){
 				body.setLinearVelocity(B2DVars.X_SPEED, 0);
 				swipingRight = false;
-				System.out.println("RIGHT SWIPE END");
-				canJump=true;
 			}			
 		}		
 	}
 
-	public void swipe(Vector2 impulse) {
+	public void swipe(Vector2 impulse, boolean slowMotionOn) {
 		if(!alive)
 			return;
-		float swipePower = 10f;
+
+		float swipePower = 5f;
+		if(slowMotionOn)
+			swipePower *=4;
 		
 		if(impulse.x < -0.5f){
-			if(swipingLeft)
-				return;
+			//if(swipingLeft)
+			//	return;
 			body.applyLinearImpulse(new Vector2(-swipePower, 0), body.getWorldCenter(), true);
 			//body.setLinearVelocity(new Vector2(-swipePower, 0));
 			swipingLeft = true;
 		}
 		else if(impulse.x > 0.5f){
-			if(swipingRight)
-				return;
+			//if(swipingRight)
+			//	return;
 			body.applyLinearImpulse(new Vector2(swipePower, 0), body.getWorldCenter(), true);
 			//body.setLinearVelocity(new Vector2(swipePower, 0));
 			swipingRight = true;
@@ -146,7 +164,6 @@ public class Dragon extends B2DSprite{
 		alive = false;		
 		this.animation.setAnimationSpeed(0);
 		body.setLinearVelocity(-3,0);
-		//Play.world.destroyBody(this.body);
 	}
 	
 	public Body getBody(){

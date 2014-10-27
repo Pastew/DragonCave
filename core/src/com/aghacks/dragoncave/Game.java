@@ -7,7 +7,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.aghacks.dragoncave.handlers.GameOverDialog;
 
 public class Game implements ApplicationListener {
 
@@ -20,22 +19,20 @@ public class Game implements ApplicationListener {
 	private float accum;
 
 	private SpriteBatch sb;
-	private OrthographicCamera cam;
+	public static OrthographicCamera cam;
 	private OrthographicCamera hudCam;
 	
 	private GameStateManager gsm;
 	
 	public static Content res;
 	
-	public static MyInputProcessor gameInputProcessor;
-
 	@Override
 	public void create() {
 		
 		V_WIDTH = Gdx.graphics.getWidth();
 	    V_HEIGHT = Gdx.graphics.getHeight();
 	    
-		Gdx.input.setInputProcessor(gameInputProcessor);
+		Gdx.input.setInputProcessor(new MyInputProcessor());
 		sb = new SpriteBatch();
 		
 		res = new Content();
@@ -44,18 +41,13 @@ public class Game implements ApplicationListener {
 		res.loadTexture("images/slowmo.png", "slowMotion");
 		
 		res.loadTexture("images/again.png", "again");
-		res.loadTexture("images/menuback.png", "back");
 		res.loadTexture("images/over.png", "gameOverDialog");
-		
-		res.loadTexture("images/bluebullet.png", "bluebullet");
-		res.loadTexture("images/greenbullet.png", "greenbullet");
-		res.loadTexture("images/redbullet.png", "redbullet");
-		res.loadTexture("images/whitebullet.png", "whitebullet");
-		
-		res.loadTexture("images/rock1.png", "rock1");
-		res.loadTexture("images/rock2.png", "rock2");
-		res.loadTexture("images/rock3.png", "rock3");
-		res.loadTexture("images/rock4.png", "rock4");
+		res.loadTexture("images/menuback.png", "back");
+				
+		for(int i = 0 ; i < 4 ; ++i){
+			res.loadTexture("images/bonus"+(i+1)+".png", "bonus"+(i+1));
+			res.loadTexture("images/rock"+(i+1)+".png", "rock"+(i+1));
+		}
 		
 		res.loadTexture("images/fire.png", "fire");
 		
@@ -68,6 +60,7 @@ public class Game implements ApplicationListener {
 		res.loadSound("sounds/floor.wav");
 		res.loadSound("sounds/menu.wav");
 		res.loadSound("sounds/collision.wav");
+		res.loadSound("sounds/light.wav", "light");
 
 		
 		cam = new OrthographicCamera();
@@ -75,9 +68,7 @@ public class Game implements ApplicationListener {
 		hudCam = new OrthographicCamera();
 		hudCam.setToOrtho(false, V_WIDTH, V_HEIGHT);
 		
-		gsm = new GameStateManager(this);
-		
-	    gameInputProcessor = new MyInputProcessor();
+		gsm = new GameStateManager(this);		
 	}
 
 	@Override
@@ -116,9 +107,5 @@ public class Game implements ApplicationListener {
 	
 	public SpriteBatch getSpriteBatch(){ return sb; };
 	public OrthographicCamera getCamera(){ return cam; };
-	public OrthographicCamera getHudCamera(){ return hudCam; }
-
-	public static void exit() {
-		Gdx.app.exit();
-	};	
+	public OrthographicCamera getHudCamera(){ return hudCam; };	
 }

@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="15dp"
+    tools:context=".MainActivity"
+    android:background="#ff323232"
+    android:clickable="false"
+    android:orientation="vertical"
+    android:id="@+id/shop_root">
+
+        <GridView
+            android:id="@+id/gridView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:numColumns="3"
+            android:stretchMode="columnWidth"
+            android:background="#ff323232"
+            android:layout_margin="4dp">
+        </GridView>
+
+</RelativeLayout>

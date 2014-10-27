@@ -1,0 +1,134 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MenuActivity"
+    android:id="@+id/root"
+    android:baselineAligned="false">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/bg_cave" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/container_balls">
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="46"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_weight="356"
+                android:layout_height="match_parent"/>
+            <RelativeLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="391">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_achievements"
+                    android:onClick="achievements"
+                    android:layout_marginTop="20dp"
+                    android:paddingRight="40dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_shop"
+                    android:onClick="shop"
+                    android:layout_marginTop="-15dp"
+                    android:paddingLeft="40dp"
+                    android:layout_below="@id/button_achievements"
+                    android:layout_centerHorizontal="true"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_highscores"
+                    android:onClick="highscores"
+                    android:layout_marginTop="-15dp"
+                    android:paddingLeft="40dp"
+                    android:layout_below="@id/button_shop"
+                    android:layout_centerHorizontal="true"/>
+
+                <!--<ImageView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/button_options"-->
+                    <!--android:onClick="settings"-->
+                    <!--android:layout_marginTop="-15dp"-->
+                    <!--android:paddingLeft="40dp"-->
+                    <!--android:layout_below="@id/button_highscores"-->
+                    <!--android:layout_centerHorizontal="true"/>-->
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_help"
+                    android:onClick="help"
+                    android:paddingRight="40dp"
+                    android:layout_marginTop="-7dp"
+                    android:layout_below="@id/button_highscores"
+                    android:layout_centerHorizontal="true"/>
+
+            </RelativeLayout>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_weight="253"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="54"
+            android:id="@+id/swipeLayout">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/dragon"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="100dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_swipe"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dp"
+                android:layout_alignParentLeft="true" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_swipe_vertical"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

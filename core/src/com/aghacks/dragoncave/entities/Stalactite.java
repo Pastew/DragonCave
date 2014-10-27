@@ -2,6 +2,7 @@ package com.aghacks.dragoncave.entities;
 
 import static com.aghacks.dragoncave.Game.V_HEIGHT;
 import static com.aghacks.dragoncave.handlers.B2DVars.PPM;
+import static com.aghacks.dragoncave.handlers.Calculate.random;
 
 import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.handlers.B2DVars;
@@ -12,18 +13,17 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.aghacks.dragoncave.Game;
 public class Stalactite{
 		
 	private static float bodyHeight = V_HEIGHT/15 / PPM;
-	private static float bodyWidth = bodyHeight/4;
+	private static float bodyWidth = bodyHeight/6;
 	Body body;
 	
 	public Stalactite (World world, float posX){		
 		//super("images/stalactite.png", V_HEIGHT/10 / PPM, V_HEIGHT/10 / 4 / PPM);
 		
 		BodyDef bdef = new BodyDef();
-		float posY = (Game.V_HEIGHT - bodyHeight/2) / PPM;
+		float posY = (Game.V_HEIGHT + bodyHeight*2*PPM) / PPM;
 		bdef.position.set(posX, posY);
 		bdef.type = BodyType.DynamicBody;
 		body = world.createBody(bdef);
@@ -33,11 +33,12 @@ public class Stalactite{
 		
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
-		fdef.density = 0.2f;
+		fdef.density = 0.1f;
 		fdef.restitution = 0.2f;
 		fdef.friction = 0.1f;
 		
 		body.createFixture(fdef).setUserData(B2DVars.ENEMY);
+		body.applyTorque(random(-0.16f, 0.16f), true);
 		Sprite boxSprite = new Sprite(Game.res.getTexture("rock1"));
 		boxSprite.setSize(bodyWidth*2 * PPM, bodyHeight*2 * PPM);
 		
@@ -49,5 +50,9 @@ public class Stalactite{
 	
 	public void destroy(World world){
 		world.destroyBody(body);
+	}
+
+	public Body getBody() {
+		return body;
 	}
 }

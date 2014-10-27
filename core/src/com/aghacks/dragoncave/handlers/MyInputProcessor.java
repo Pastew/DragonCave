@@ -1,5 +1,7 @@
 package com.aghacks.dragoncave.handlers;
 
+import static com.aghacks.dragoncave.states.Play.b2dCam;
+
 import com.aghacks.dragoncave.Game;
 import com.aghacks.dragoncave.states.Play;
 import com.badlogic.gdx.Gdx;
@@ -31,8 +33,9 @@ public class MyInputProcessor implements InputProcessor{
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if(screenX > Gdx.graphics.getWidth() *0.8f){
+		if(screenX > Gdx.graphics.getWidth() *0.8f ){
 			Play.slowMotionStart();		
+			return false;
 		}
 		
 		if(!startedSwipe && screenX < Game.V_WIDTH*0.7){
@@ -45,8 +48,6 @@ public class MyInputProcessor implements InputProcessor{
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		System.out.println("GameOverDialog Processor!!!!");
-
 		if(!startedSwipe)
 			Play.slowMotionStop();
 		
@@ -72,6 +73,9 @@ public class MyInputProcessor implements InputProcessor{
 
 	@Override
 	public boolean scrolled(int amount) {
+		Game.cam.zoom += amount;
 		return false;
 	}
+	
+	
 }
